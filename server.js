@@ -31,7 +31,7 @@ Give a decision: BUY, SELL, or WAIT with 1-sentence reason.`;
     const decision = completion.data.choices[0].message.content.trim();
     res.json({ decision });
   } catch (error) {
-    console.error('Error from OpenAI:', error.response?.data || error.message);
+    console.error('❌ GPT ERROR:', error.response?.data || error.message, error.stack);
     res.status(500).send('Error processing alert');
   }
 });
