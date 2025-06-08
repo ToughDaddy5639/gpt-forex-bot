@@ -16,7 +16,7 @@ Give a decision: BUY, SELL, or WAIT with 1-sentence reason.`;
     const completion = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4-1106-preview',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.5,
       },
