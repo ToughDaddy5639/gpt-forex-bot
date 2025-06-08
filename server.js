@@ -1,10 +1,8 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const { Configuration, OpenAIApi } = require("openai");
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Configuration, OpenAIApi } = require('openai');
 
 const app = express();
-const port = process.env.PORT || 3000;
-
 app.use(bodyParser.json());
 
 const configuration = new Configuration({
@@ -12,31 +10,29 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-app.post("/webhook", async (req, res) => {
+// 🔥 Add webhook route here
+app.post('/webhook', async (req, res) => {
+  const { symbol, interval, indicator, value } = req.body;
+
+  const prompt = `Act as a professional forex sniper. Analyze this signal:\nSymbol: ${symbol}\nTimeframe: ${interval}\nIndicator: ${indicator}\nValue: ${value}\nWhat should we do? (BUY, SELL, WAIT) with short reason.`;
+
   try {
-    const { indicator, symbol, interval, value } = req.body;
-
-    const prompt = `You are a forex sniper. Symbol: ${symbol}, TF: ${interval}, Event: ${indicator}, Value: ${value}. 
-What should I do: BUY, SELL, or WAIT? Give 1-line reason. Include entry, SL, TP.`;
-
-    const chat = await openai.createChatCompletion({
-      model: "gpt-4", // or "gpt-3.5-turbo"
-      messages: [{ role: "user", content: prompt }],
+    const response = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }],
     });
 
-    const reply = chat.data.choices[0].message.content;
-    console.log("GPT:", reply);
-    res.send({ reply });
+    const reply = response.data.choices[0].message.content;
+    res.json({ decision: reply });
   } catch (error) {
-    console.error("Error:", error.message);
-    res.status(500).send("ChatGPT error");
+    console.error('GPT error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Something went wrong with ChatGPT' });
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("GPT Forex Bot is running.");
+app.get('/', (req, res) => {
+  res.send('Bot is live');
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
