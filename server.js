@@ -1,14 +1,21 @@
-const express = require('express');
-require('dotenv').config();
-
+const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
-app.use(express.json());
 
-app.post('/price-alert', (req, res) => {
-  const { symbol, price, time } = req.body;
-  console.log(`📡 Alert: ${symbol} @ ${price} (${time})`);
-  res.status(200).send('Received');
+app.use(bodyParser.json());
+
+// Webhook endpoint
+app.post("/webhook", (req, res) => {
+  console.log("Received TradingView alert:", req.body);
+  res.status(200).send("Alert received!");
+});
+
+// Keep-alive home page
+app.get("/", (req, res) => {
+  res.send("GPT Forex Bot is running!");
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is live at http://localhost:${PORT}`);
+});
