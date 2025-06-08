@@ -29,11 +29,10 @@ Give a decision: BUY, SELL, or WAIT with 1-sentence reason.`;
     );
 
     const decision = completion.data.choices[0].message.content.trim();
-    return res.json({ decision });
-
+    res.json({ decision });
   } catch (error) {
     console.error('Error from OpenAI:', error.response?.data || error.message);
-    return res.status(500).send('Error processing alert');
+    res.status(500).send('Error processing alert');
   }
 });
 
